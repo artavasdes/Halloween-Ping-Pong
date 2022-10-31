@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import time
 import os
 import argparse
+import math
 
 '''
 This programs uses UdpComms.py from Siliconifier's github repository: https://github.com/Siliconifier/Python-Unity-Socket-Communication
@@ -12,15 +13,14 @@ This programs uses UdpComms.py from Siliconifier's github repository: https://gi
 
 #Arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("--save_video", default = False, type = bool, help = "True or False to save video of all camera feed")
+parser.add_argument("--save_video", default = True, type = bool, help = "True or False to save video of all camera feed")
 parser.add_argument("--fps", default = 30, type = int, help = "Set FPS of all cameras")
 parser.add_argument("--width", default = 1280, type = int, help = "Set width for cameras")
 parser.add_argument("--height", default = 720, type = int, help = "Set height for cameras")
-parser.add_argument("--light_range", default = [140, 255], nargs = "+", help = "List with 2 values between 0-255 (a low threshold and high threshold) on grayscale. Anything between these 2 values will be counted as light.")
 args = parser.parse_args()
 
 #Initializes the pong game
-os.startfile("Interactive_Pong\Build\Pong.exe")
+os.startfile("Halloween-Ping-Pong-main\Interactive_Pong\Build\Pong.exe")
 
 # Create UDP socket to use for sending (and receiving)
 sock = U.UdpComms(udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
@@ -30,18 +30,20 @@ final = "000000"
 
 #Video Start
 LeftCamera = cv.VideoCapture(0)
+#LeftCamera = cv.VideoCapture(1, cv.CAP_DSHOW)
 LeftCamera.set(cv.CAP_PROP_FPS, args.fps)
 LeftCamera.set(cv.CAP_PROP_FRAME_WIDTH, args.width)
 LeftCamera.set(cv.CAP_PROP_FRAME_HEIGHT, args.height)
 
-#RightCamera = LeftCamera
-RightCamera = cv.VideoCapture(1)
+#RightCamera = cv.VideoCapture(2, cv.CAP_DSHOW)
+#RightCamera = cv.VideoCapture(0)
+RightCamera = LeftCamera
 RightCamera.set(cv.CAP_PROP_FPS, args.fps)
 RightCamera.set(cv.CAP_PROP_FRAME_WIDTH, args.width)
 RightCamera.set(cv.CAP_PROP_FRAME_HEIGHT, args.height)
 
-lower = int(args.light_range[0])
-upper = int(args.light_range[1])
+lower = 140
+upper = 255
 
 #Create necessary folders
 if not os.path.exists("media"):
@@ -61,7 +63,6 @@ def callibration(capture, capturename, bright):
     #waiting loop for saved callibration image
     while True:
         isTrue, frame = capture.read()
-        frame = cv.resize(frame,(args.width, args.height), interpolation = cv.INTER_CUBIC) 
         cam = cv.flip(frame, 1)
         Feed = calc_simple(cam)
         cv.imshow("Feed", Feed)
@@ -195,7 +196,6 @@ while True:
     #Left
     #Sets up camera feeds for analysis
     isTrue, frame = LeftCamera.read()
-    frame = cv.resize(frame,(args.width, args.height), interpolation = cv.INTER_CUBIC)
     LeftFeed = cv.flip(frame, 1)
 
     LeftDisplayFeed = calc_simple(LeftFeed)
@@ -207,7 +207,6 @@ while True:
     #Right
     #Sets up camera feeds for analysis
     isTrue, frame = RightCamera.read()
-    frame = cv.resize(frame,(args.width, args.height), interpolation = cv.INTER_CUBIC)
     RightFeed = cv.flip(frame, 1)
 
     RightDisplayFeed = calc_simple(RightFeed)
@@ -215,6 +214,9 @@ while True:
 
     RightOriginalValue = calc(RightFeed)
     RightValue = feed_calc(RightOriginalValue, RightMinVal, RightRealMaxVal)
+
+    LeftValue = round(LeftValue)
+    RightValue = round(RightValue)
 
     #Send Stuff
     dataArray[0] = LeftValue
@@ -245,12 +247,15 @@ while True:
         combined_feed = cv.hconcat([LeftFeed, RightFeed])
         out.write(combined_feed)
 
+    print(data_str)
+
 LeftCamera.release()
 RightCamera.release()
 print("End")
 print("Starting Values")
 print("Left Values", LeftRealMaxVal, LeftMaxVal, LeftMinVal)
 print("Right Values", RightRealMaxVal, RightMaxVal, RightMinVal)
+
 
 if args.save_video:
     out.release()
