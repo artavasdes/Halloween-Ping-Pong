@@ -6,8 +6,8 @@ A version with more frequent updates can be found at: https://github.com/artavas
 
 It would be very much appreciated if you tell us about how you used this project at vartanyildiz@gmail.com or vedicpatel@gmail.com
 
-Link to Video: https://www.youtube.com/watch?v=OcLmcevJgVQ
-[![IMAGE_ALT](https://img.youtube.com/vi/OcLmcevJgVQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=OcLmcevJgVQ)
+Link to Video: [https://www.youtube.com/watch?v=OcLmcevJgVQ](https://www.youtube.com/watch?v=g5n15vhcGCg&ab_channel=BCALangsta)
+[![IMAGE_ALT]([https://img.youtube.com/vi/OcLmcevJgVQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=OcLmcevJgVQ](https://www.youtube.com/watch?v=g5n15vhcGCg&ab_channel=BCALangsta))
 
 ## How it Works
 We were able to create an interactive game on this large of a scale with the use of smartphone flashlights and two cameras up on stage. In order for either of the sides to controll their respective paddle, they had to turn on their smartphone flashlights and point them towards the cameras on stage. One camera was positioned on the left while the other on the right and with the captured feed, our program calculated a brightness value between 0-100 of each side. The paddle in-game would then adjust according to the value. With a higher value, the paddle moves up and with a lower value it moves down. 
